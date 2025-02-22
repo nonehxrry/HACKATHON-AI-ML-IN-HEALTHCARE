@@ -5,3 +5,4 @@ fpdf
 transformers
 langdetect
 scikit-learn
+xgboost
