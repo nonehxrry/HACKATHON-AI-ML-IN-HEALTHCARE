@@ -4,3 +4,4 @@ joblib
 fpdf
 transformers
 langdetect
+scikit-learn
