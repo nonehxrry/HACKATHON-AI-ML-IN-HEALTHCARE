@@ -3,10 +3,6 @@ import pandas as pd
 import joblib
 from io import BytesIO
 from fpdf import FPDF
-from transformers import pipeline
-from langdetect import detect
-import math
-import os
 
 # Set page configuration
 st.set_page_config(
@@ -151,12 +147,17 @@ elif step == "Final Diagnosis":
         prediction = model.predict(input_data)
         prediction_proba = model.predict_proba(input_data)
 
-        if prediction[0] == 1:
-            st.markdown("### Diagnosis: High Risk ❌")
-            st.error(f"Risk Probability: {prediction_proba[0][1]:.2f}")
-        else:
-            st.markdown("### Diagnosis: Low Risk ✅")
-            st.success(f"Low Risk Probability: {prediction_proba[0][0]:.2f}")
+        # Map prediction to disease
+        disease_mapping = {
+            0: "Heart Disease",
+            1: "Diabetes",
+            2: "Cancer",
+            3: "Stroke"
+        }
+        predicted_disease = disease_mapping.get(prediction[0], "Unknown")
+
+        st.markdown(f"### Predicted Disease: {predicted_disease}")
+        st.write(f"**Probability:** {prediction_proba[0][prediction[0]]:.2f}")
 
         # Generate PDF Report
         pdf = FPDF()
@@ -194,9 +195,15 @@ elif step == "Final Diagnosis":
 
         # Prediction Results
         pdf.cell(200, 10, txt="Prediction Results:", ln=True)
-        pdf.cell(200, 10, txt=f"Prediction: {'High Risk' if prediction[0] == 1 else 'Low Risk'}", ln=True)
-        pdf.cell(200, 10, txt=f"Low Risk Probability: {prediction_proba[0][0]:.2f}", ln=True)
-        pdf.cell(200, 10, txt=f"High Risk Probability: {prediction_proba[0][1]:.2f}", ln=True)
+        pdf.cell(200, 10, txt=f"Predicted Disease: {predicted_disease}", ln=True)
+        pdf.cell(200, 10, txt=f"Probability: {prediction_proba[0][prediction[0]]:.2f}", ln=True)
+        pdf.ln(10)
+
+        # Recommendations
+        pdf.cell(200, 10, txt="Recommendations:", ln=True)
+        pdf.cell(200, 10, txt="- Consult a doctor for further evaluation.", ln=True)
+        pdf.cell(200, 10, txt="- Maintain a healthy diet and exercise regularly.", ln=True)
+        pdf.ln(10)
 
         # Save PDF to buffer
         buffer = BytesIO()
@@ -249,7 +256,7 @@ def chatbot_response(user_message):
     disease_topics = ["disease prediction", "predict disease", "health risk"]
     if any(topic in user_message for topic in disease_topics):
         st.session_state["last_topic"] = "disease"
-        return "📌 **Disease Prediction:**\n- **Heart Disease** ❤️\n- **Diabetes** 🩸\n- **Cancer** 🎗️\n- **Stroke** 🧠\n\n💡 Ask about a specific disease for details!"
+                return "📌 **Disease Prediction:**\n- **Heart Disease** ❤️\n- **Diabetes** 🩸\n- **Cancer** 🎗️\n- **Stroke** 🧠\n\n💡 Ask about a specific disease for details!"
 
     # Specific Diseases with More Details
     disease_details = {
@@ -331,7 +338,7 @@ if st.sidebar.button("🚀 Send"):
         bot_reply = chatbot_response(user_input)
         st.session_state["chat_messages"].append({"role": "bot", "content": bot_reply})
         
-                # Clear input field by resetting session state
+        # Clear input field by resetting session state
         st.session_state["user_input"] = ""  
         
         # Refresh UI to show cleared input field
