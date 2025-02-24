@@ -1,8 +1,9 @@
-streamlit
-pandas
-joblib
 fpdf
 transformers
 langdetect
-scikit-learn
 xgboost
+streamlit==1.42.2
+pandas==2.2.3
+scikit-learn==1.6.1
+joblib==1.4.2
+fpdf==1.7.2
