@@ -69,95 +69,81 @@ except FileNotFoundError:
 # Initialize session state
 if "patient_details" not in st.session_state:
     st.session_state["patient_details"] = {
-        "full_name": "",
-        "email": "",
-        "phone": "",
         "age": 30,
-        "gender": "Male",
-        "blood_pressure": 120,
-        "cholesterol": 200,
-        "bmi": 25,
-        "glucose": 100,
-        "smoking_status": "Non-smoker",
-        "alcohol_consumption": "Non-drinker",
-        "physical_activity": "Sedentary",
-        "family_history": "No",
-        "symptoms": "",
-        "medical_history": "",
-        "test_results": None
+        "sex": 1,  # 1 = Male, 0 = Female
+        "cp": 0,  # Chest pain type (0-3)
+        "trestbps": 120,  # Resting blood pressure
+        "chol": 200,  # Serum cholesterol
+        "fbs": 0,  # Fasting blood sugar > 120 mg/dL (1 = true, 0 = false)
+        "restecg": 0,  # Resting electrocardiographic results (0-2)
+        "thalach": 150,  # Maximum heart rate achieved
+        "exang": 0,  # Exercise-induced angina (1 = yes, 0 = no)
+        "oldpeak": 1.0,  # ST depression induced by exercise
+        "slope": 1,  # Slope of the peak exercise ST segment (0-2)
+        "ca": 0,  # Number of major vessels (0-3)
+        "thal": 2,  # Thalassemia (1-3)
     }
 
 # Navigation menu
 step = st.radio(
     "Navigate through the steps:",
-    ["Patient Information", "Health Details", "Upload Test Results", "Final Diagnosis"]
+    ["Patient Information", "Health Details", "Final Diagnosis"]
 )
 
 # Step 1: Patient Information
 if step == "Patient Information":
     st.markdown("### Step 1: Patient Information")
-    st.session_state["patient_details"]["full_name"] = st.text_input("Full Name", st.session_state["patient_details"]["full_name"])
-    st.session_state["patient_details"]["email"] = st.text_input("Email Address", st.session_state["patient_details"]["email"])
-    st.session_state["patient_details"]["phone"] = st.text_input("Phone Number", st.session_state["patient_details"]["phone"])
+    st.session_state["patient_details"]["age"] = st.number_input("Age:", min_value=1, max_value=100, value=st.session_state["patient_details"]["age"])
+    st.session_state["patient_details"]["sex"] = st.selectbox("Sex:", ["Male", "Female"], index=0 if st.session_state["patient_details"]["sex"] == 1 else 1)
 
 # Step 2: Health Details
 elif step == "Health Details":
     st.markdown("### Step 2: Health Details")
-    st.session_state["patient_details"]["age"] = st.slider("Age:", 1, 100, st.session_state["patient_details"]["age"])
-    st.session_state["patient_details"]["gender"] = st.selectbox("Gender:", ["Male", "Female", "Other"])
-    st.session_state["patient_details"]["blood_pressure"] = st.number_input("Blood Pressure (mmHg):", min_value=0, step=1, value=st.session_state["patient_details"]["blood_pressure"])
-    st.session_state["patient_details"]["cholesterol"] = st.number_input("Cholesterol (mg/dL):", min_value=0, step=1, value=st.session_state["patient_details"]["cholesterol"])
-    st.session_state["patient_details"]["bmi"] = st.number_input("BMI:", min_value=0.0, step=0.1, value=st.session_state["patient_details"]["bmi"])
-    st.session_state["patient_details"]["glucose"] = st.number_input("Glucose Level (mg/dL):", min_value=0, step=1, value=st.session_state["patient_details"]["glucose"])
-    st.session_state["patient_details"]["smoking_status"] = st.selectbox("Smoking Status:", ["Non-smoker", "Ex-smoker", "Smoker"])
-    st.session_state["patient_details"]["alcohol_consumption"] = st.selectbox("Alcohol Consumption:", ["Non-drinker", "Occasional", "Regular"])
-    st.session_state["patient_details"]["physical_activity"] = st.selectbox("Physical Activity:", ["Sedentary", "Light", "Moderate", "Active"])
-    st.session_state["patient_details"]["family_history"] = st.selectbox("Family History of Disease:", ["No", "Yes"])
-    st.session_state["patient_details"]["symptoms"] = st.text_area("Symptoms", st.session_state["patient_details"]["symptoms"])
-    st.session_state["patient_details"]["medical_history"] = st.text_area("Medical History", st.session_state["patient_details"]["medical_history"])
+    st.session_state["patient_details"]["cp"] = st.number_input("Chest Pain Type (0-3):", min_value=0, max_value=3, value=st.session_state["patient_details"]["cp"])
+    st.session_state["patient_details"]["trestbps"] = st.number_input("Resting Blood Pressure (mmHg):", min_value=0, value=st.session_state["patient_details"]["trestbps"])
+    st.session_state["patient_details"]["chol"] = st.number_input("Serum Cholesterol (mg/dL):", min_value=0, value=st.session_state["patient_details"]["chol"])
+    st.session_state["patient_details"]["fbs"] = st.selectbox("Fasting Blood Sugar > 120 mg/dL:", ["No", "Yes"], index=st.session_state["patient_details"]["fbs"])
+    st.session_state["patient_details"]["restecg"] = st.number_input("Resting Electrocardiographic Results (0-2):", min_value=0, max_value=2, value=st.session_state["patient_details"]["restecg"])
+    st.session_state["patient_details"]["thalach"] = st.number_input("Maximum Heart Rate Achieved:", min_value=0, value=st.session_state["patient_details"]["thalach"])
+    st.session_state["patient_details"]["exang"] = st.selectbox("Exercise-Induced Angina:", ["No", "Yes"], index=st.session_state["patient_details"]["exang"])
+    st.session_state["patient_details"]["oldpeak"] = st.number_input("ST Depression Induced by Exercise:", min_value=0.0, value=st.session_state["patient_details"]["oldpeak"])
+    st.session_state["patient_details"]["slope"] = st.number_input("Slope of the Peak Exercise ST Segment (0-2):", min_value=0, max_value=2, value=st.session_state["patient_details"]["slope"])
+    st.session_state["patient_details"]["ca"] = st.number_input("Number of Major Vessels (0-3):", min_value=0, max_value=3, value=st.session_state["patient_details"]["ca"])
+    st.session_state["patient_details"]["thal"] = st.number_input("Thalassemia (1-3):", min_value=1, max_value=3, value=st.session_state["patient_details"]["thal"])
 
-# Step 3: Upload Test Results
-elif step == "Upload Test Results":
-    st.markdown("### Step 3: Upload Test Results")
-    st.session_state["patient_details"]["test_results"] = st.file_uploader("Upload Test Results")
-
-# Step 4: Final Diagnosis
+# Step 3: Final Diagnosis
 elif step == "Final Diagnosis":
-    st.markdown("### Step 4: Final Diagnosis")
+    st.markdown("### Step 3: Final Diagnosis")
     patient_details = st.session_state["patient_details"]
 
     # Prepare input data for prediction
     input_data = pd.DataFrame({
         "age": [patient_details["age"]],
-        "gender": [1 if patient_details["gender"] == "Female" else 0],
-        "blood_pressure": [patient_details["blood_pressure"]],
-        "cholesterol": [patient_details["cholesterol"]],
-        "bmi": [patient_details["bmi"]],
-        "glucose": [patient_details["glucose"]],
-        "smoking_status": [1 if patient_details["smoking_status"] == "Smoker" else 0],
-        "alcohol_consumption": [1 if patient_details["alcohol_consumption"] == "Regular" else 0],
-        "physical_activity": [1 if patient_details["physical_activity"] == "Active" else 0],
-        "family_history": [1 if patient_details["family_history"] == "Yes" else 0],
+        "sex": [patient_details["sex"]],
+        "cp": [patient_details["cp"]],
+        "trestbps": [patient_details["trestbps"]],
+        "chol": [patient_details["chol"]],
+        "fbs": [patient_details["fbs"]],
+        "restecg": [patient_details["restecg"]],
+        "thalach": [patient_details["thalach"]],
+        "exang": [patient_details["exang"]],
+        "oldpeak": [patient_details["oldpeak"]],
+        "slope": [patient_details["slope"]],
+        "ca": [patient_details["ca"]],
+        "thal": [patient_details["thal"]],
     })
-
-    input_data = input_data.reindex(columns=model.feature_names_in_, fill_value=0)
 
     # Prediction
     try:
         prediction = model.predict(input_data)
         prediction_proba = model.predict_proba(input_data)
 
-        # Map prediction to disease
-        disease_mapping = {
-            0: "Heart Disease",
-            1: "Diabetes",
-            2: "Cancer",
-            3: "Stroke"
-        }
-        predicted_disease = disease_mapping.get(prediction[0], "Unknown")
-
-        st.markdown(f"### Predicted Disease: {predicted_disease}")
-        st.write(f"**Probability:** {prediction_proba[0][prediction[0]]:.2f}")
+        if prediction[0] == 1:
+            st.markdown("### Diagnosis: High Risk ❌")
+            st.error(f"Risk Probability: {prediction_proba[0][1]:.2f}")
+        else:
+            st.markdown("### Diagnosis: Low Risk ✅")
+            st.success(f"Low Risk Probability: {prediction_proba[0][0]:.2f}")
 
         # Generate PDF Report
         pdf = FPDF()
@@ -170,40 +156,28 @@ elif step == "Final Diagnosis":
         pdf.set_font("Arial", size=12)  # Reset font to normal
         pdf.ln(10)
 
-        # Patient Information
-        pdf.cell(200, 10, txt="Patient Information:", ln=True)
-        pdf.cell(200, 10, txt=f"Full Name: {patient_details.get('full_name', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Email: {patient_details.get('email', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Phone: {patient_details.get('phone', 'N/A')}", ln=True)
-        pdf.ln(10)
-
         # Health Details
         pdf.cell(200, 10, txt="Health Details:", ln=True)
         pdf.cell(200, 10, txt=f"Age: {patient_details.get('age', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Gender: {patient_details.get('gender', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Blood Pressure: {patient_details.get('blood_pressure', 'N/A')} mmHg", ln=True)
-        pdf.cell(200, 10, txt=f"Cholesterol: {patient_details.get('cholesterol', 'N/A')} mg/dL", ln=True)
-        pdf.cell(200, 10, txt=f"BMI: {patient_details.get('bmi', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Glucose Level: {patient_details.get('glucose', 'N/A')} mg/dL", ln=True)
-        pdf.cell(200, 10, txt=f"Smoking Status: {patient_details.get('smoking_status', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Alcohol Consumption: {patient_details.get('alcohol_consumption', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Physical Activity: {patient_details.get('physical_activity', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Family History: {patient_details.get('family_history', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Symptoms: {patient_details.get('symptoms', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Medical History: {patient_details.get('medical_history', 'N/A')}", ln=True)
+        pdf.cell(200, 10, txt=f"Sex: {'Male' if patient_details.get('sex', 1) == 1 else 'Female'}", ln=True)
+        pdf.cell(200, 10, txt=f"Chest Pain Type: {patient_details.get('cp', 'N/A')}", ln=True)
+        pdf.cell(200, 10, txt=f"Resting Blood Pressure: {patient_details.get('trestbps', 'N/A')} mmHg", ln=True)
+        pdf.cell(200, 10, txt=f"Serum Cholesterol: {patient_details.get('chol', 'N/A')} mg/dL", ln=True)
+        pdf.cell(200, 10, txt=f"Fasting Blood Sugar > 120 mg/dL: {'Yes' if patient_details.get('fbs', 0) == 1 else 'No'}", ln=True)
+        pdf.cell(200, 10, txt=f"Resting Electrocardiographic Results: {patient_details.get('restecg', 'N/A')}", ln=True)
+        pdf.cell(200, 10, txt=f"Maximum Heart Rate Achieved: {patient_details.get('thalach', 'N/A')}", ln=True)
+        pdf.cell(200, 10, txt=f"Exercise-Induced Angina: {'Yes' if patient_details.get('exang', 0) == 1 else 'No'}", ln=True)
+        pdf.cell(200, 10, txt=f"ST Depression Induced by Exercise: {patient_details.get('oldpeak', 'N/A')}", ln=True)
+        pdf.cell(200, 10, txt=f"Slope of the Peak Exercise ST Segment: {patient_details.get('slope', 'N/A')}", ln=True)
+        pdf.cell(200, 10, txt=f"Number of Major Vessels: {patient_details.get('ca', 'N/A')}", ln=True)
+        pdf.cell(200, 10, txt=f"Thalassemia: {patient_details.get('thal', 'N/A')}", ln=True)
         pdf.ln(10)
 
         # Prediction Results
         pdf.cell(200, 10, txt="Prediction Results:", ln=True)
-        pdf.cell(200, 10, txt=f"Predicted Disease: {predicted_disease}", ln=True)
-        pdf.cell(200, 10, txt=f"Probability: {prediction_proba[0][prediction[0]]:.2f}", ln=True)
-        pdf.ln(10)
-
-        # Recommendations
-        pdf.cell(200, 10, txt="Recommendations:", ln=True)
-        pdf.cell(200, 10, txt="- Consult a doctor for further evaluation.", ln=True)
-        pdf.cell(200, 10, txt="- Maintain a healthy diet and exercise regularly.", ln=True)
-        pdf.ln(10)
+        pdf.cell(200, 10, txt=f"Prediction: {'High Risk' if prediction[0] == 1 else 'Low Risk'}", ln=True)
+        pdf.cell(200, 10, txt=f"Low Risk Probability: {prediction_proba[0][0]:.2f}", ln=True)
+        pdf.cell(200, 10, txt=f"High Risk Probability: {prediction_proba[0][1]:.2f}", ln=True)
 
         # Save PDF to buffer
         buffer = BytesIO()
@@ -221,130 +195,6 @@ elif step == "Final Diagnosis":
         st.error(f"Prediction failed: {e}")
 
 # Footer
-st.markdown(
-    """
-    <footer>
-        <p>© 2025 AI Predictive Methods for Healthcare. All rights reserved.</p>
-    </footer>
-    """,
-    unsafe_allow_html=True
-)
-
-# --- Chatbot in Sidebar ---
-st.sidebar.markdown("## 🤖 AI Healthcare Chatbot")
-
-# --- Initialize Chat History & Session Variables ---
-if "chat_messages" not in st.session_state:
-    st.session_state["chat_messages"] = [
-        {"role": "bot", "content": "👋 Hello! You can speak or type your question.\n\n**📌 Categories:**\n- Disease Prediction 🏥\n- Health Tips 💡\n- Symptom Checker 🔍\n- Medical Advice 🩺\n- Test Results 📊"}
-    ]
-if "last_topic" not in st.session_state:
-    st.session_state["last_topic"] = None  # Track conversation topic
-if "user_input" not in st.session_state:
-    st.session_state["user_input"] = ""  # Track the input field value
-
-# --- Smarter Chatbot Response System ---
-def chatbot_response(user_message):
-    user_message = user_message.lower().strip()
-
-    # Standard Greetings
-    greetings = ["hello", "hi", "hey", "how are you"]
-    if user_message in greetings:
-        return "👋 Hello! How can I assist you today? You can ask about disease prediction, health tips, or medical advice!"
-
-    # Disease Prediction
-    disease_topics = ["disease prediction", "predict disease", "health risk"]
-    if any(topic in user_message for topic in disease_topics):
-        st.session_state["last_topic"] = "disease"
-        return "📌 **Disease Prediction:**\n- **Heart Disease** ❤️\n- **Diabetes** 🩸\n- **Cancer** 🎗️\n- **Stroke** 🧠\n\n💡 Ask about a specific disease for details!"
-
-    # Specific Diseases with More Details
-    disease_details = {
-        "heart disease": """❤️ **Heart Disease Details:**
-        - **Risk Factors:** High blood pressure, high cholesterol, smoking, diabetes, obesity.
-        - **Symptoms:** Chest pain, shortness of breath, fatigue.
-        - **Prevention:** Regular exercise, healthy diet, no smoking.
-        - **Treatment:** Medications, surgery, lifestyle changes.
-        - 💡 **Tip:** Regular check-ups can help in early detection.""",
-
-        "diabetes": """🩸 **Diabetes Details:**
-        - **Risk Factors:** Family history, obesity, sedentary lifestyle.
-        - **Symptoms:** Increased thirst, frequent urination, fatigue.
-        - **Prevention:** Healthy diet, regular exercise, weight management.
-        - **Treatment:** Insulin therapy, medications, lifestyle changes.
-        - 💡 **Tip:** Monitor blood sugar levels regularly.""",
-
-        "cancer": """🎗️ **Cancer Details:**
-        - **Risk Factors:** Smoking, alcohol, radiation, family history.
-        - **Symptoms:** Unexplained weight loss, fatigue, lumps.
-        - **Prevention:** Avoid tobacco, limit alcohol, healthy diet.
-        - **Treatment:** Surgery, chemotherapy, radiation therapy.
-        - 💡 **Tip:** Early detection increases the chances of successful treatment.""",
-
-        "stroke": """🧠 **Stroke Details:**
-        - **Risk Factors:** High blood pressure, smoking, diabetes.
-        - **Symptoms:** Sudden numbness, confusion, trouble speaking.
-        - **Prevention:** Control blood pressure, quit smoking, healthy diet.
-        - **Treatment:** Medications, surgery, rehabilitation.
-        - 💡 **Tip:** FAST (Face, Arms, Speech, Time) is a key symptom checker."""
-    }
-
-    # Check for a specific disease type
-    for key, response in disease_details.items():
-        if key in user_message:
-            st.session_state["last_topic"] = key  # Store last topic
-            return response
-
-    # Follow-Up Questions Based on Last Topic
-    if st.session_state["last_topic"]:
-        if "tell me more" in user_message or "more details" in user_message:
-            # Provide additional details based on the last topic
-            if st.session_state["last_topic"] == "heart disease":
-                return "❤️ **More on Heart Disease:**\n- Regular exercise and a healthy diet can significantly reduce the risk.\n- Early detection through regular check-ups is crucial."
-            elif st.session_state["last_topic"] == "diabetes":
-                return "🩸 **More on Diabetes:**\n- Managing blood sugar levels through diet and medication is key.\n- Regular monitoring can prevent complications."
-            elif st.session_state["last_topic"] == "cancer":
-                return "🎗️ **More on Cancer:**\n- Early detection through screenings can save lives.\n- Lifestyle changes can reduce the risk."
-            elif st.session_state["last_topic"] == "stroke":
-                return "🧠 **More on Stroke:**\n- Recognizing symptoms early can save lives.\n- Rehabilitation can help in recovery."
-
-    # Health Tips
-    if "health tips" in user_message or "tips" in user_message:
-        return "💡 **Health Tips:**\n- **Eat a balanced diet** 🥗\n- **Exercise regularly** 🏋️‍♂️\n- **Get enough sleep** 😴\n- **Avoid smoking and excessive alcohol** 🚭🍷\n- **Regular check-ups** 🩺"
-
-    # Symptom Checker
-    if "symptom checker" in user_message or "symptoms" in user_message:
-        return "🔍 **Symptom Checker:**\n- **Chest pain:** Could indicate heart disease.\n- **Increased thirst:** Could indicate diabetes.\n- **Unexplained weight loss:** Could indicate cancer.\n- **Sudden numbness:** Could indicate stroke.\n\n💡 Always consult a doctor for accurate diagnosis."
-
-    # Default Response
-    return "🤖 Hmm, I don't have an exact answer for that. Try asking about disease prediction, health tips, or medical advice!"
-
-# --- Display Chat History ---
-st.sidebar.markdown("### 💬 Chat History:")
-for message in st.session_state["chat_messages"]:
-    role = "👤 You" if message["role"] == "user" else "🤖 Bot"
-    st.sidebar.markdown(f"**{role}:** {message['content']}")
-
-# --- Text Input Field for Manual Chat ---
-user_input = st.sidebar.text_input("💬 Type your question:", value=st.session_state["user_input"], key="chat_input")
-
-# --- Process User Input ---
-if st.sidebar.button("🚀 Send"):
-    if user_input.strip():
-        # Add user input to chat history
-        st.session_state["chat_messages"].append({"role": "user", "content": user_input})
-        
-        # Get bot response
-        bot_reply = chatbot_response(user_input)
-        st.session_state["chat_messages"].append({"role": "bot", "content": bot_reply})
-        
-        # Clear input field by resetting session state
-        st.session_state["user_input"] = ""  
-        
-        # Refresh UI to show cleared input field
-        st.rerun()
-
-# --- Footer ---
 st.markdown(
     """
     <footer>
