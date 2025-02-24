@@ -4,7 +4,8 @@ import joblib
 from io import BytesIO
 from fpdf import FPDF
 from my_module import CustomTransformer, CustomModel, custom_function
-
+import joblib
+model = joblib.load('healthcare_model.pkl')
 # Set page configuration
 st.set_page_config(
     page_title="AI Predictive Methods for Healthcare",
