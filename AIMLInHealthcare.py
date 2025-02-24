@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 from io import BytesIO
 from fpdf import FPDF
+from my_module import CustomTransformer, CustomModel, custom_function
 
 # Set page configuration
 st.set_page_config(
