@@ -256,7 +256,7 @@ def chatbot_response(user_message):
     disease_topics = ["disease prediction", "predict disease", "health risk"]
     if any(topic in user_message for topic in disease_topics):
         st.session_state["last_topic"] = "disease"
-                return "📌 **Disease Prediction:**\n- **Heart Disease** ❤️\n- **Diabetes** 🩸\n- **Cancer** 🎗️\n- **Stroke** 🧠\n\n💡 Ask about a specific disease for details!"
+        return "📌 **Disease Prediction:**\n- **Heart Disease** ❤️\n- **Diabetes** 🩸\n- **Cancer** 🎗️\n- **Stroke** 🧠\n\n💡 Ask about a specific disease for details!"
 
     # Specific Diseases with More Details
     disease_details = {
