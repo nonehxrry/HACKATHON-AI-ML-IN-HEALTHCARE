@@ -1,11 +1,20 @@
+# AIMLInHealthcare.py
+
 import streamlit as st
 import pandas as pd
 import joblib
 from io import BytesIO
 from fpdf import FPDF
-from my_module import CustomTransformer, CustomModel, custom_function
-import joblib
-model = joblib.load('healthcare_model.pkl')
+
+# Load the trained model
+model_path = 'healthcare_model.pkl'
+try:
+    model = joblib.load(model_path)
+    st.success("Model loaded successfully!")
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    st.stop()
+
 # Set page configuration
 st.set_page_config(
     page_title="AI Predictive Methods for Healthcare",
@@ -58,15 +67,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# Load the trained model
-model_path = 'healthcare_model.pkl'
-try:
-    model = joblib.load(model_path)
-    st.success("Model loaded successfully!")
-except FileNotFoundError:
-    st.error(f"Model file not found: {model_path}")
-    st.stop()
 
 # Initialize session state
 if "patient_details" not in st.session_state:
