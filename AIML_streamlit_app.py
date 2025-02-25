@@ -152,7 +152,7 @@ elif step == "Diagnosis & Treatment":
     })
 
     if not isinstance(input_data, pd.DataFrame):
-    input_data = pd.DataFrame(input_data)
+        input_data = pd.DataFrame(input_data)
 
     # Check if the model has the feature_names_in_ attribute
     if hasattr(model, 'feature_names_in_'):
