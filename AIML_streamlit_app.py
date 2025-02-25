@@ -62,7 +62,7 @@ st.markdown(
 )
 
 # Load the trained model
-model_path = 'healthcare_model.pkl'
+model_path = 'https://github.com/nonehxrry/HACKATHON-AI-ML-IN-HEALTHCARE/blob/main/healthcare_model.pkl'
 try:
     model = joblib.load(model_path)
     st.success("Model loaded successfully!")
