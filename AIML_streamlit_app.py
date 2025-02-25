@@ -151,7 +151,20 @@ elif step == "Diagnosis & Treatment":
         "family_history": [1 if st.session_state["patient_details"]["family_history"] == "Yes" else 0],
     })
 
-    input_data = input_data.reindex(columns=model.feature_names_in_, fill_value=0)
+    if not isinstance(input_data, pd.DataFrame):
+    input_data = pd.DataFrame(input_data)
+
+    # Check if the model has the feature_names_in_ attribute
+    if hasattr(model, 'feature_names_in_'):
+        feature_names = model.feature_names_in_
+    else:
+        # If feature_names_in_ is not available, manually specify the feature names
+        # Replace this list with the actual feature names used during model training
+        feature_names = ['age', 'height', 'weight', 'bmi', 'blood_pressure']  # Example feature names
+
+    # Reindex the input data to match the model's expected features
+    # Fill missing columns with 0 (or another default value)
+    input_data = input_data.reindex(columns=feature_names, fill_value=0)
 
     # Prediction
     try:
