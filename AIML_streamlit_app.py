@@ -110,7 +110,7 @@ elif step == "Health Metrics":
     st.session_state["patient_details"]["bmi"] = st.number_input(
     "BMI",
     min_value=0.0,  # Ensure this is a float
-    value=bmi_value  # Use the explicitly converted float value
+    value = bmi_value  # Use the explicitly converted float value
 )
     st.session_state["patient_details"]["glucose"] = st.number_input("Glucose Level (mg/dL)", min_value=0, value=st.session_state["patient_details"]["glucose"])
     st.session_state["patient_details"]["smoking_status"] = st.selectbox("Smoking Status", ["Non-smoker", "Smoker"], index=0 if st.session_state["patient_details"]["smoking_status"] == "Non-smoker" else 1)
