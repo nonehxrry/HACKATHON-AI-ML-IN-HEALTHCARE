@@ -1,0 +1,27 @@
+from sklearn.ensemble import RandomForestClassifier
+import joblib
+import pandas as pd
+
+# Example dataset
+data = {
+    'age': [25, 45, 35, 50, 23],
+    'gender': [0, 1, 0, 1, 0],  # 0: Male, 1: Female
+    'blood_pressure': [120, 140, 130, 150, 110],
+    'cholesterol': [200, 240, 220, 260, 180],
+    'bmi': [22, 28, 25, 30, 20],
+    'glucose': [100, 120, 110, 130, 90],
+    'smoking_status': [0, 1, 0, 1, 0],  # 0: Non-smoker, 1: Smoker
+    'target': [0, 1, 0, 1, 0]  # 0: Low risk, 1: High risk
+}
+df = pd.DataFrame(data)
+
+# Features and target
+X = df.drop('target', axis=1)
+y = df['target']
+
+# Train a model
+model = RandomForestClassifier()
+model.fit(X, y)
+
+# Save the model
+joblib.dump(model, 'healthcare_model.pkl')
