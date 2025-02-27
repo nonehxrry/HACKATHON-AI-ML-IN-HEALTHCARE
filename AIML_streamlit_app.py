@@ -62,9 +62,10 @@ st.markdown(
 )
 
 # Load the trained model
-model_path = 'healthcare_model.pkl'  # Corrected: Assign the file path directly
+model_path = 'healthcare_model.pkl'  # Path to the model file
 try:
-    model = joblib.load(model_path)  # Corrected: Use joblib.load to load the model
+    with st.spinner("Loading model..."):
+        model = joblib.load(model_path)  # Corrected: Load the model
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
@@ -107,21 +108,7 @@ elif step == "Health Metrics":
     st.markdown("### Step 2: Health Metrics")
     st.session_state["patient_details"]["blood_pressure"] = st.number_input("Blood Pressure (mmHg)", min_value=0, value=st.session_state["patient_details"]["blood_pressure"])
     st.session_state["patient_details"]["cholesterol"] = st.number_input("Cholesterol (mg/dL)", min_value=0, value=st.session_state["patient_details"]["cholesterol"])
-    if "patient_details" not in st.session_state:
-        st.session_state["patient_details"] = {"bmi": 0.0}  # Initialize BMI as a float
-
-    # Ensure the BMI value is a float
-    bmi_value = float(st.session_state["patient_details"]["bmi"])
-
-    # Display BMI input widget
-    st.session_state["patient_details"]["bmi"] = st.number_input(
-        "BMI",
-        min_value=0.0,  # Ensure this is a float
-        value=bmi_value  # Use the explicitly converted float value
-    )
-
-    # Display the current BMI value
-    st.write(f"Current BMI: {st.session_state['patient_details']['bmi']}")
+    st.session_state["patient_details"]["bmi"] = st.number_input("BMI", min_value=0.0, value=float(st.session_state["patient_details"]["bmi"]))
     st.session_state["patient_details"]["glucose"] = st.number_input("Glucose Level (mg/dL)", min_value=0, value=st.session_state["patient_details"]["glucose"])
     st.session_state["patient_details"]["smoking_status"] = st.selectbox("Smoking Status", ["Non-smoker", "Smoker"], index=0 if st.session_state["patient_details"]["smoking_status"] == "Non-smoker" else 1)
     st.session_state["patient_details"]["alcohol_consumption"] = st.selectbox("Alcohol Consumption", ["None", "Light", "Moderate", "Heavy"], index=["None", "Light", "Moderate", "Heavy"].index(st.session_state["patient_details"]["alcohol_consumption"]))
@@ -151,20 +138,9 @@ elif step == "Diagnosis & Treatment":
         "family_history": [1 if st.session_state["patient_details"]["family_history"] == "Yes" else 0],
     })
 
-    if not isinstance(input_data, pd.DataFrame):
-        input_data = pd.DataFrame(input_data)
-
-    # Check if the model has the feature_names_in_ attribute
+    # Ensure input data matches the model's expected features
     if hasattr(model, 'feature_names_in_'):
-        feature_names = model.feature_names_in_
-    else:
-        # If feature_names_in_ is not available, manually specify the feature names
-        # Replace this list with the actual feature names used during model training
-        feature_names = ['age', 'height', 'weight', 'bmi', 'blood_pressure']  # Example feature names
-
-    # Reindex the input data to match the model's expected features
-    # Fill missing columns with 0 (or another default value)
-    input_data = input_data.reindex(columns=feature_names, fill_value=0)
+        input_data = input_data.reindex(columns=model.feature_names_in_, fill_value=0)
 
     # Prediction
     try:
@@ -184,9 +160,9 @@ elif step == "Diagnosis & Treatment":
         pdf.set_font("Arial", size=12)
 
         # Title
-        pdf.set_font("Arial", style="BU", size=12)  # Set font to bold and underline
+        pdf.set_font("Arial", style="BU", size=12)
         pdf.cell(200, 10, txt="Healthcare Analysis Report", ln=True, align="C")
-        pdf.set_font("Arial", size=12)  # Reset font to normal
+        pdf.set_font("Arial", size=12)
         pdf.ln(10)
 
         # Patient Information
@@ -212,7 +188,7 @@ elif step == "Diagnosis & Treatment":
 
         # Save PDF to buffer
         buffer = BytesIO()
-        pdf_bytes = pdf.output(dest="S").encode("latin1")  # Encode the PDF content
+        pdf_bytes = pdf.output(dest="S").encode("latin1")
         buffer.write(pdf_bytes)
         buffer.seek(0)
 
@@ -260,106 +236,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# --- Chatbot in Sidebar ---
-st.sidebar.markdown("## 🤖 AI Healthcare Chatbot")
-
-# --- Initialize Chat History & Session Variables ---
-if "chat_messages" not in st.session_state:
-    st.session_state["chat_messages"] = [
-        {"role": "bot", "content": "👋 Hello! You can speak or type your question.\n\n**📌 Categories:**\n- Disease Diagnosis 🩺\n- Treatment Recommendations 💊\n- Health Tips 🍎\n- Symptom Checker 🤒\n- Mental Health Support 🧠"}
-    ]
-if "last_topic" not in st.session_state:
-    st.session_state["last_topic"] = None  # Track conversation topic
-if "user_input" not in st.session_state:
-    st.session_state["user_input"] = ""  # Track the input field value
-
-# --- Smarter Chatbot Response System ---
-def chatbot_response(user_message):
-    user_message = user_message.lower().strip()
-
-    # Standard Greetings
-    greetings = ["hello", "hi", "hey", "how are you"]
-    if user_message in greetings:
-        return "👋 Hello! How can I assist you today? You can ask about disease diagnosis, treatment, or health tips!"
-
-    # Disease Diagnosis
-    if "diagnosis" in user_message or "disease" in user_message:
-        st.session_state["last_topic"] = "diagnosis"
-        return "🩺 **Disease Diagnosis:**\n- **Symptoms:** Describe your symptoms for a preliminary diagnosis.\n- **Risk Factors:** Provide your health metrics for a detailed analysis."
-
-    # Treatment Recommendations
-    if "treatment" in user_message or "medicine" in user_message:
-        st.session_state["last_topic"] = "treatment"
-        return "💊 **Treatment Recommendations:**\n- **Medications:** Based on your diagnosis, we can recommend medications.\n- **Lifestyle Changes:** Suggestions for diet, exercise, and other lifestyle changes."
-
-    # Health Tips
-    if "health tips" in user_message or "healthy living" in user_message:
-        st.session_state["last_topic"] = "health tips"
-        return "🍎 **Health Tips:**\n- **Diet:** Eat a balanced diet rich in fruits and vegetables.\n- **Exercise:** Regular physical activity is essential.\n- **Sleep:** Ensure 7-9 hours of sleep per night."
-
-    # Symptom Checker
-    if "symptom" in user_message or "checker" in user_message:
-        st.session_state["last_topic"] = "symptom checker"
-        return "🤒 **Symptom Checker:**\n- **Common Symptoms:** Fever, cough, headache, etc.\n- **Severe Symptoms:** Chest pain, difficulty breathing, etc."
-
-    # Mental Health Support
-    if "mental health" in user_message or "stress" in user_message:
-        st.session_state["last_topic"] = "mental health"
-        return "🧠 **Mental Health Support:**\n- **Counseling:** Seek professional help if needed.\n- **Relaxation Techniques:** Practice mindfulness and meditation."
-
-    # Default Response
-    return "🤖 Hmm, I don't have an exact answer for that. Try asking about disease diagnosis, treatment, or health tips!"
-
-# --- Display Chat History ---
-st.sidebar.markdown("### 💬 Chat History:")
-for message in st.session_state["chat_messages"]:
-    role = "👤 You" if message["role"] == "user" else "🤖 Bot"
-    st.sidebar.markdown(f"**{role}:** {message['content']}")
-
-# --- Text Input Field for Manual Chat ---
-user_input = st.sidebar.text_input("💬 Type your question:", value=st.session_state["user_input"], key="chat_input")
-
-# --- Process User Input ---
-if st.sidebar.button("🚀 Send"):
-    if user_input.strip():
-        # Add user input to chat history
-        st.session_state["chat_messages"].append({"role": "user", "content": user_input})
-        
-        # Get bot response
-        bot_reply = chatbot_response(user_input)
-        st.session_state["chat_messages"].append({"role": "bot", "content": bot_reply})
-        
-        # Clear input field by resetting session state
-        st.session_state["user_input"] = ""  
-
-
-# Initialize session state keys if they don't exist
-if "bmi_active" not in st.session_state:
-    st.session_state["bmi_active"] = False  # Default value
-
-# --- Display BMI Calculator if Triggered ---
-if st.session_state["bmi_active"]:
-    st.sidebar.markdown("### 🏋️ BMI Calculator")
-    weight = st.sidebar.number_input("Weight (kg)", min_value=1.0, value=70.0, step=0.1)
-    height = st.sidebar.number_input("Height (cm)", min_value=50.0, value=170.0, step=0.1)
-    
-    if st.sidebar.button("📊 Calculate BMI"):
-        height_m = height / 100  # Convert height to meters
-        bmi = round(weight / (height_m ** 2), 2)
-        st.sidebar.success(f"📌 Your BMI: {bmi}")
-        
-        # BMI Interpretation
-        if bmi < 18.5:
-            st.sidebar.warning("Underweight: Consider consulting a nutritionist.")
-        elif 18.5 <= bmi < 24.9:
-            st.sidebar.success("Normal weight: Keep up the good work!")
-        elif 25 <= bmi < 29.9:
-            st.sidebar.warning("Overweight: Consider a balanced diet and exercise.")
-        else:
-            st.sidebar.error("Obese: Please consult a healthcare professional.")
-        
-        st.session_state["bmi_active"] = False  # Reset BMI trigger        
-        # Refresh UI to show cleared input field
-        st.rerun()
-
