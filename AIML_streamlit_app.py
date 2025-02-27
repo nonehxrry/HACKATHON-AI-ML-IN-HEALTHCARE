@@ -167,20 +167,16 @@ elif step == "Diagnosis & Treatment":
     input_data = input_data.reindex(columns=feature_names, fill_value=0)
 
     # Prediction
-    model_path = "healthcare_model.pkl"
-        
-    if os.path.exists(model_path):
-        model = joblib.load(model_path)
-        if not (hasattr(model, "predict") and hasattr(model, "predict_proba")):
-                st.error("❌ Loaded object is not a valid scikit-learn model! Check the .pkl file.")
-                st.stop()
+    try:
+        prediction = model.predict(input_data)
+        prediction_proba = model.predict_proba(input_data)
+
+        if prediction[0] == 1:
+            st.markdown("### Diagnosis: High Risk of Disease ❌")
+            st.error(f"Risk Probability: {prediction_proba[0][1]:.2f}")
         else:
-            st.error(f"❌ Model file not found: {model_path}")
-            st.stop()
-            
-        
-        # Debugging: Check if the model is correct
-        st.write(f"Loaded model type: {type(model)}")
+            st.markdown("### Diagnosis: Low Risk of Disease ✅")
+            st.success(f"Low Risk Probability: {prediction_proba[0][0]:.2f}")
 
         # Generate PDF Report
         pdf = FPDF()
@@ -366,4 +362,3 @@ if st.session_state["bmi_active"]:
         st.session_state["bmi_active"] = False  # Reset BMI trigger        
         # Refresh UI to show cleared input field
         st.rerun()
-
