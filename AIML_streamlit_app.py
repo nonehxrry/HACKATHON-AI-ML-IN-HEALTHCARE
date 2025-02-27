@@ -167,21 +167,21 @@ elif step == "Diagnosis & Treatment":
     input_data = input_data.reindex(columns=feature_names, fill_value=0)
 
     # Prediction
-    model_path = "healthcare_model.pkl"
-    
-    if os.path.exists(model_path):
-        model = joblib.load(model_path)
-    
-        # Ensure it is a valid scikit-learn model
-        if not (hasattr(model, "predict") and hasattr(model, "predict_proba")):
-            st.error("❌ Loaded object is not a valid scikit-learn model! Check the .pkl file.")
+        model_path = "healthcare_model.pkl"
+        
+        if os.path.exists(model_path):
+            model = joblib.load(model_path)
+        
+            # Ensure it is a valid scikit-learn model
+            if not (hasattr(model, "predict") and hasattr(model, "predict_proba")):
+                st.error("❌ Loaded object is not a valid scikit-learn model! Check the .pkl file.")
+                st.stop()
+        else:
+            st.error(f"❌ Model file not found: {model_path}")
             st.stop()
-    else:
-        st.error(f"❌ Model file not found: {model_path}")
-        st.stop()
-    
-    # Debugging: Check if the model is correct
-    st.write(f"Loaded model type: {type(model)}")
+        
+        # Debugging: Check if the model is correct
+        st.write(f"Loaded model type: {type(model)}")
 
         # Generate PDF Report
         pdf = FPDF()
