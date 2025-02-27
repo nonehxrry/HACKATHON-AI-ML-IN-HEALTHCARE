@@ -167,7 +167,7 @@ elif step == "Diagnosis & Treatment":
     input_data = input_data.reindex(columns=feature_names, fill_value=0)
 
     # Prediction
-        model_path = "healthcare_model.pkl"
+    model_path = "healthcare_model.pkl"
         
         if os.path.exists(model_path):
             model = joblib.load(model_path)
