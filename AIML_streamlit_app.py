@@ -60,7 +60,7 @@ st.markdown(
 # Load the trained model
 model_path = 'healthcare_model.pkl'  # Ensure this path is correct
 try:
-    model = joblib.load
+    model = joblib.load(model_path)
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
@@ -126,7 +126,14 @@ elif step == "Lifestyle Habits":
     st.session_state["patient_details"]["alcohol_consumption"] = st.selectbox("Alcohol Consumption", ["None", "Light", "Moderate", "Heavy"], index=["None", "Light", "Moderate", "Heavy"].index(st.session_state["patient_details"]["alcohol_consumption"]))
     st.session_state["patient_details"]["physical_activity"] = st.selectbox("Physical Activity", ["None", "Light", "Moderate", "Heavy"], index=["None", "Light", "Moderate", "Heavy"].index(st.session_state["patient_details"]["physical_activity"]))
     st.session_state["patient_details"]["family_history"] = st.selectbox("Family History of Diseases", ["No", "Yes"], index=0 if st.session_state["patient_details"]["family_history"] == "No" else 1)
-    st.session_state["patient_details"]["diet"] = st.selectbox("Diet", ["Balanced", "Unbalanced", "Vegetarian", "Vegan"], index=["Balanced", "Unbalanced", "Vegetarian", "Vegan"].index(st.session_state["patient_details"]["diet"]))
+    
+    # Ensure the diet selection is valid
+    diet_options = ["Balanced", "Unbalanced", "Vegetarian", "Vegan"]
+    current_diet = st.session_state["patient_details"]["diet"]
+    if current_diet not in diet_options:
+        current_diet = "Balanced"  # Default to Balanced if the current diet is invalid
+    st.session_state["patient_details"]["diet"] = st.selectbox("Diet", diet_options, index=diet_options.index(current_diet))
+    
     st.session_state["patient_details"]["sleep_hours"] = st.number_input("Sleep Hours", min_value=0, max_value=24, value=st.session_state["patient_details"].get("sleep_hours", 7))
     st.session_state["patient_details"]["stress_level"] = st.selectbox("Stress Level", ["Low", "Moderate", "High"], index=["Low", "Moderate", "High"].index(st.session_state["patient_details"]["stress_level"]))
     st.session_state["patient_details"]["waist_circumference"] = st.number_input("Waist Circumference (cm)", min_value=0, value=st.session_state["patient_details"].get("waist_circumference", 80))
