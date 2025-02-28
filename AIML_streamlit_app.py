@@ -342,13 +342,12 @@ if st.session_state["bmi_active"]:
     st.sidebar.markdown("### 🏋️ BMI Calculator")
     weight = st.sidebar.number_input("Weight (kg)", min_value=1.0, value=70.0, step=0.1)
     height = st.sidebar.number_input("Height (cm)", min_value=50.0, value=170.0, step=0.1)
-    
+
     if st.sidebar.button("📊 Calculate BMI"):
-        height_m = height / 100  # Convert height to meters
+        height_m = height / 100
         bmi = round(weight / (height_m ** 2), 2)
         st.sidebar.success(f"📌 Your BMI: {bmi}")
-        
-        # BMI Interpretation
+
         if bmi < 18.5:
             st.sidebar.warning("Underweight: Consider consulting a nutritionist.")
         elif 18.5 <= bmi < 24.9:
@@ -357,7 +356,7 @@ if st.session_state["bmi_active"]:
             st.sidebar.warning("Overweight: Consider a balanced diet and exercise.")
         else:
             st.sidebar.error("Obese: Please consult a healthcare professional.")
-        
+
         st.session_state["bmi_active"] = False  # Reset BMI trigger        
         # Refresh UI to show cleared input field
         st.rerun()
