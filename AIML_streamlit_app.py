@@ -57,19 +57,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-model_path = "healthcare_model.pkl"
-
-model_path = 'healthcare_model.pkl'  # Corrected: Assign the file path directly
+# Load the trained model
+model_path = 'healthcare_model.pkl'  # Ensure this path is correct
 try:
     model = joblib.load
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
-    st.stop()
-
-# Ensure model is callable before prediction
-if not hasattr(model, "predict"):
-    st.error("Loaded object is not a valid model. Ensure 'healthcare_model.pkl' is a trained model.")
     st.stop()
 
 # Initialize session state
@@ -119,8 +113,7 @@ elif step == "Health Metrics":
     st.markdown("### Step 2: Health Metrics")
     st.session_state["patient_details"]["blood_pressure"] = st.number_input("Blood Pressure (mmHg)", min_value=0, value=st.session_state["patient_details"].get("blood_pressure", 120))
     st.session_state["patient_details"]["cholesterol"] = st.number_input("Cholesterol (mg/dL)", min_value=0, value=st.session_state["patient_details"].get("cholesterol", 200))
-    st.session_state["patient_details"]["bmi"] = st.number_input("BMI", min_value=0.0, value=float(st.session_state["patient_details"].get("bmi", 25.0)))
-
+    st.session_state["patient_details"]["bmi"] = st.number_input("BMI", min_value=0.0, value=st.session_state["patient_details"].get("bmi", 25))
     st.write(f"Current BMI: {st.session_state['patient_details']['bmi']}")
     st.session_state["patient_details"]["glucose"] = st.number_input("Glucose Level (mg/dL)", min_value=0, value=st.session_state["patient_details"].get("glucose", 100))
     st.session_state["patient_details"]["heart_rate"] = st.number_input("Heart Rate (bpm)", min_value=0, value=st.session_state["patient_details"].get("heart_rate", 72))
