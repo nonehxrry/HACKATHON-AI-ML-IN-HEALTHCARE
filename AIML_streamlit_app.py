@@ -64,6 +64,9 @@ try:
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
+if "model" not in st.session_state:
+    st.session_state["model"] = joblib.load("model.pkl")
+    model = st.session_state["model"]
     st.stop()
 
 # Initialize session state
