@@ -64,7 +64,7 @@ st.markdown(
 # Load the trained model
 model_path = 'healthcare_model.pkl'  # Corrected: Assign the file path directly
 try:
-    model = joblib.load
+    model = joblib.load(model_path)
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
@@ -210,17 +210,16 @@ elif step == "Diagnosis & Treatment":
         pdf.cell(200, 10, txt=f"Low Risk Probability: {prediction_proba[0][0]:.2f}", ln=True)
         pdf.cell(200, 10, txt=f"High Risk Probability: {prediction_proba[0][1]:.2f}", ln=True)
 
-        # Save PDF to file
-        pdf.output("healthcare_analysis_report.pdf")
+        # Save PDF to bytes
+        pdf_bytes = pdf.output(dest="S")
 
         # Download PDF
-        with open("healthcare_analysis_report.pdf", "rb") as pdf_file:
-            st.download_button(
-                label="Download Report as PDF",
-                data=pdf_file,
-                file_name="healthcare_analysis_report.pdf",
-                mime="application/pdf"
-            )
+        st.download_button(
+            label="Download Report as PDF",
+            data=pdf_bytes,
+            file_name="healthcare_analysis_report.pdf",
+            mime="application/pdf"
+        )
     except Exception as e:
         st.error(f"Prediction failed: {e}")
 
