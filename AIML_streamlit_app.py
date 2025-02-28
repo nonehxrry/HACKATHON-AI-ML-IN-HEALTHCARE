@@ -279,8 +279,8 @@ elif step == "Diagnosis & Treatment":
                 file_name="healthcare_analysis_report.pdf",
                 mime="application/pdf"
             )
-            except Exception as e:
-                st.error(f"Prediction failed: {e}")
+        except Exception as e:
+            st.error(f"Prediction failed: {e}")
 
 # Step 4: Final Report
 elif step == "Final Report":
