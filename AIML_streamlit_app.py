@@ -59,15 +59,18 @@ st.markdown(
 
 # Load the trained model
 model_path = 'healthcare_model.pkl'  # Ensure this path is correct
-try:
-    model = joblib.load
-    st.success("Model loaded successfully!")
-except FileNotFoundError:
-    st.error(f"Model file not found: {model_path}")
+
+# Load the model only if it is not already in session state
 if "model" not in st.session_state:
-    st.session_state["model"] = joblib.load("model.pkl")
-    model = st.session_state["model"]
-    st.stop()
+    try:
+        st.session_state["model"] = joblib.load  # Load the model
+        st.success("Model loaded successfully!")
+    except FileNotFoundError:
+        st.error(f"Model file not found: {model_path}")
+        st.stop()  # Stop execution if the model file is missing
+
+# Assign model from session state
+model = st.session_state["model"]
 
 # Initialize session state
 if "patient_details" not in st.session_state:
