@@ -157,21 +157,55 @@ elif step == "Lifestyle Habits":
 # Step 4: Diabetes Tracker
 elif step == "Diabetes Tracker":
     st.markdown("### Step 4: Diabetes Tracker")
-    st.session_state["patient_details"]["fasting_blood_sugar"] = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=100, value=st.session_state["patient_details"].get("fasting_blood_sugar", 90))
-    st.session_state["patient_details"]["post_meal_blood_sugar"] = st.number_input("Post-Meal Blood Sugar (mg/dL)", min_value=100, value=st.session_state["patient_details"].get("post_meal_blood_sugar", 120))
-    st.session_state["patient_details"]["hba1c"] = st.number_input("HbA1c (%)", min_value=0.0, value=st.session_state["patient_details"].get("hba1c", 5.5))
 
+    # Ensure patient details exist in session state
+    st.session_state.setdefault("patient_details", {})
+
+    # Fasting Blood Sugar Input (Validates input >50)
+    fasting_sugar = st.number_input(
+        "Fasting Blood Sugar (mg/dL)", 
+        min_value=50, 
+        max_value=300, 
+        value=int(st.session_state["patient_details"].get("fasting_blood_sugar", 100))
+    )
+    if fasting_sugar < 50:
+        st.warning("⚠️ Enter a valid fasting blood sugar level (must be ≥ 50).")
+    else:
+        st.session_state["patient_details"]["fasting_blood_sugar"] = fasting_sugar
+
+    # Post-Meal Blood Sugar Input
+    post_meal_sugar = st.number_input(
+        "Post-Meal Blood Sugar (mg/dL)", 
+        min_value=50, 
+        max_value=400, 
+        value=int(st.session_state["patient_details"].get("post_meal_blood_sugar", 140))
+    )
+    if post_meal_sugar < 50:
+        st.warning("⚠️ Enter a valid post-meal blood sugar level (must be ≥ 50).")
+    else:
+        st.session_state["patient_details"]["post_meal_blood_sugar"] = post_meal_sugar
+
+    # HbA1c Input
+    hba1c = st.number_input(
+        "HbA1c (%)", 
+        min_value=4.0, 
+        max_value=15.0, 
+        value=float(st.session_state["patient_details"].get("hba1c", 5.5))
+    )
+    if hba1c < 4.0:
+        st.warning("⚠️ Enter a valid HbA1c level (must be ≥ 4.0).")
+    else:
+        st.session_state["patient_details"]["hba1c"] = hba1c
+
+    # Analyze Diabetes Risk
     if st.button("Analyze Diabetes Risk"):
-        fasting_sugar = st.session_state["patient_details"]["fasting_blood_sugar"]
-        post_meal_sugar = st.session_state["patient_details"]["post_meal_blood_sugar"]
-        hba1c = st.session_state["patient_details"]["hba1c"]
-
         if fasting_sugar >= 126 or post_meal_sugar >= 200 or hba1c >= 6.5:
-            st.error("High risk of diabetes. Consult a doctor immediately.")
+            st.error("🚨 High risk of diabetes. Consult a doctor immediately.")
         elif 100 <= fasting_sugar < 126 or 140 <= post_meal_sugar < 200 or 5.7 <= hba1c < 6.5:
-            st.warning("Prediabetes detected. Lifestyle changes are recommended.")
+            st.warning("⚠️ Prediabetes detected. Lifestyle changes are recommended.")
         else:
-            st.success("Normal blood sugar levels. Keep up the healthy lifestyle.")
+            st.success("✅ Normal blood sugar levels. Keep up the healthy lifestyle!")
+
 
 # Step 5: Diagnosis & Treatment
 elif step == "Diagnosis & Treatment":
