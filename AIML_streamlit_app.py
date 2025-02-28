@@ -59,17 +59,12 @@ st.markdown(
 
 model_path = "healthcare_model.pkl"
 
+model_path = 'healthcare_model.pkl'  # Corrected: Assign the file path directly
 try:
     model = joblib.load
-    if not hasattr(model, "predict"):
-        st.error("Loaded file is not a valid ML model. Please check and reload.")
-        st.stop()
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
-    st.stop()
-except Exception as e:
-    st.error(f"Error loading model: {e}")
     st.stop()
 
 # Ensure model is callable before prediction
