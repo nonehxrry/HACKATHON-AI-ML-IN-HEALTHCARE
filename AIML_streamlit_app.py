@@ -129,14 +129,28 @@ elif step == "Lifestyle Habits":
     
     # Ensure the diet selection is valid
     diet_options = ["Balanced", "Unbalanced", "Vegetarian", "Vegan"]
-    stress_options = ["Low", "Moderate", "High"]
     current_diet = st.session_state["patient_details"].get("diet", "No diet information available")
     if current_diet not in diet_options:
         current_diet = "Balanced"  # Default to Balanced if the current diet is invalid
     st.session_state["patient_details"]["diet"] = st.selectbox("Diet", diet_options, index=diet_options.index(current_diet))
     
     st.session_state["patient_details"]["sleep_hours"] = st.number_input("Sleep Hours", min_value=0, max_value=24, value=st.session_state["patient_details"].get("sleep_hours", 7))
-    st.session_state["patient_details"]["stress_level"] = st.selectbox("Stress Level", stress_options, index=stress_options.index(st.session_state["patient_details"]["stress_level"]))
+    if "patient_details" not in st.session_state:
+    st.session_state["patient_details"] = {}
+
+    # Ensure 'stress_level' exists before accessing it
+    if "stress_level" not in st.session_state["patient_details"]:
+        st.session_state["patient_details"]["stress_level"] = "Low"  # Default value
+    
+    # Use the safe default value
+    stress_options = ["Low", "Moderate", "High"]
+    st.session_state["patient_details"]["stress_level"] = st.selectbox(
+        "Stress Level",
+        stress_options,
+        index=stress_options.index(st.session_state["patient_details"]["stress_level"])
+    )
+    
+    st.write(f"Selected Stress Level: {st.session_state['patient_details']['stress_level']}")
     st.session_state["patient_details"]["waist_circumference"] = st.number_input("Waist Circumference (cm)", min_value=0, value=st.session_state["patient_details"].get("waist_circumference", 80))
     st.session_state["patient_details"]["hip_circumference"] = st.number_input("Hip Circumference (cm)", min_value=0, value=st.session_state["patient_details"].get("hip_circumference", 90))
 
