@@ -157,8 +157,8 @@ elif step == "Lifestyle Habits":
 # Step 4: Diabetes Tracker
 elif step == "Diabetes Tracker":
     st.markdown("### Step 4: Diabetes Tracker")
-    st.session_state["patient_details"]["fasting_blood_sugar"] = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=0, value=st.session_state["patient_details"].get("fasting_blood_sugar", 90))
-    st.session_state["patient_details"]["post_meal_blood_sugar"] = st.number_input("Post-Meal Blood Sugar (mg/dL)", min_value=0, value=st.session_state["patient_details"].get("post_meal_blood_sugar", 120))
+    st.session_state["patient_details"]["fasting_blood_sugar"] = st.number_input("Fasting Blood Sugar (mg/dL)", min_value=100, value=st.session_state["patient_details"].get("fasting_blood_sugar", 90))
+    st.session_state["patient_details"]["post_meal_blood_sugar"] = st.number_input("Post-Meal Blood Sugar (mg/dL)", min_value=100, value=st.session_state["patient_details"].get("post_meal_blood_sugar", 120))
     st.session_state["patient_details"]["hba1c"] = st.number_input("HbA1c (%)", min_value=0.0, value=st.session_state["patient_details"].get("hba1c", 5.5))
 
     if st.button("Analyze Diabetes Risk"):
