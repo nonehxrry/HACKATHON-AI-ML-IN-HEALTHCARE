@@ -129,7 +129,7 @@ elif step == "Lifestyle Habits":
     
     # Ensure the diet selection is valid
     diet_options = ["Balanced", "Unbalanced", "Vegetarian", "Vegan"]
-    current_diet = st.session_state["patient_details"]["diet"]
+    current_diet = st.session_state["patient_details"].get("diet", "No diet information available")
     if current_diet not in diet_options:
         current_diet = "Balanced"  # Default to Balanced if the current diet is invalid
     st.session_state["patient_details"]["diet"] = st.selectbox("Diet", diet_options, index=diet_options.index(current_diet))
