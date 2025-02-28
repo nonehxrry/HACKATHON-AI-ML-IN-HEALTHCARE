@@ -113,7 +113,8 @@ elif step == "Health Metrics":
     st.markdown("### Step 2: Health Metrics")
     st.session_state["patient_details"]["blood_pressure"] = st.number_input("Blood Pressure (mmHg)", min_value=0, value=st.session_state["patient_details"].get("blood_pressure", 120))
     st.session_state["patient_details"]["cholesterol"] = st.number_input("Cholesterol (mg/dL)", min_value=0, value=st.session_state["patient_details"].get("cholesterol", 200))
-    st.session_state["patient_details"]["bmi"] = st.number_input("BMI", min_value=0.0, value=st.session_state["patient_details"].get("bmi", 25))
+    st.session_state["patient_details"]["bmi"] = st.number_input("BMI", min_value=0.0, value=float(st.session_state["patient_details"].get("bmi", 25.0)))
+
     st.write(f"Current BMI: {st.session_state['patient_details']['bmi']}")
     st.session_state["patient_details"]["glucose"] = st.number_input("Glucose Level (mg/dL)", min_value=0, value=st.session_state["patient_details"].get("glucose", 100))
     st.session_state["patient_details"]["heart_rate"] = st.number_input("Heart Rate (bpm)", min_value=0, value=st.session_state["patient_details"].get("heart_rate", 72))
