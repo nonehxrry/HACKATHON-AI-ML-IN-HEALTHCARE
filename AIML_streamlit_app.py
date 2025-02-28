@@ -57,14 +57,20 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-model_path = 'healthcare_model.pkl'  # Ensure this path is correct
+model_path = "healthcare_model.pkl"
 
 try:
-    model = joblib.load  # ✅ Corrected: Call joblib.load to load the model
+    model = joblib.load(model_path)
+    if not hasattr(model, "predict"):
+        st.error("Loaded file is not a valid ML model. Please check and reload.")
+        st.stop()
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
-    st.stop()  # Stop execution if model is missing
+    st.stop()
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    st.stop()
 
 # Ensure model is callable before prediction
 if not hasattr(model, "predict"):
