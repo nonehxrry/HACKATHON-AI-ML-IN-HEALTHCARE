@@ -60,7 +60,7 @@ st.markdown(
 model_path = "healthcare_model.pkl"
 
 try:
-    model = joblib.load(model_path)
+    model = joblib.load
     if not hasattr(model, "predict"):
         st.error("Loaded file is not a valid ML model. Please check and reload.")
         st.stop()
