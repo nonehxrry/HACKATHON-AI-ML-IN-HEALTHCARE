@@ -64,7 +64,7 @@ st.markdown(
 # Load the trained model
 model_path = 'healthcare_model.pkl'  # Corrected: Assign the file path directly
 try:
-    model = joblib.load
+    model = joblib.load(model_path)
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
@@ -210,13 +210,15 @@ elif step == "Diagnosis & Treatment":
         pdf.cell(200, 10, txt=f"Low Risk Probability: {prediction_proba[0][0]:.2f}", ln=True)
         pdf.cell(200, 10, txt=f"High Risk Probability: {prediction_proba[0][1]:.2f}", ln=True)
 
-        # Save PDF to bytes
-        pdf_bytes = pdf.output(dest="S")
+        # Save PDF to buffer
+        buffer = BytesIO()
+        pdf_output = pdf.output(dest="S").encode("latin1")  # Encode the PDF content
+        buffer.write(pdf_output)
+        buffer.seek(0)
 
-        # Download PDF
         st.download_button(
             label="Download Report as PDF",
-            data=pdf_bytes,
+            data=buffer,
             file_name="healthcare_analysis_report.pdf",
             mime="application/pdf"
         )
@@ -253,7 +255,7 @@ elif step == "Final Report":
 st.markdown(
     """
     <footer>
-        <p> 2025 AI Predictive Methods for Healthcare Analysis. All rights reserved.</p>
+        <p>© 2025 AI Predictive Methods for Healthcare Analysis. All rights reserved.</p>
     </footer>
     """,
     unsafe_allow_html=True
@@ -333,7 +335,7 @@ if st.sidebar.button("🚀 Send"):
 
 # Initialize session state keys if they don't exist
 if "bmi_active" not in st.session_state:
-    st.session_state["bmi_active"] = False  # Default value
+    st.session_state["bmi_active"] = False
 
 # --- Display BMI Calculator if Triggered ---
 if st.session_state["bmi_active"]:
