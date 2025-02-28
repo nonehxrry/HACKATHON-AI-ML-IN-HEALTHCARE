@@ -136,7 +136,7 @@ elif step == "Lifestyle Habits":
     
     st.session_state["patient_details"]["sleep_hours"] = st.number_input("Sleep Hours", min_value=0, max_value=24, value=st.session_state["patient_details"].get("sleep_hours", 7))
     if "patient_details" not in st.session_state:
-    st.session_state["patient_details"] = {}
+        st.session_state["patient_details"] = {}
 
     # Ensure 'stress_level' exists before accessing it
     if "stress_level" not in st.session_state["patient_details"]:
