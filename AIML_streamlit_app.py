@@ -64,7 +64,7 @@ st.markdown(
 # Load the trained model
 model_path = 'healthcare_model.pkl'  # Corrected: Assign the file path directly
 try:
-    model = joblib.load(model_path)
+    model = joblib.load
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
