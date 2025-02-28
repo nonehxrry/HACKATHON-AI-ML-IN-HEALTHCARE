@@ -8,7 +8,6 @@ from langdetect import detect
 import math
 import os
 
-
 # Set page configuration
 st.set_page_config(
     page_title="AI Predictive Methods for Healthcare Analysis",
@@ -65,7 +64,7 @@ st.markdown(
 # Load the trained model
 model_path = 'healthcare_model.pkl'  # Corrected: Assign the file path directly
 try:
-    model = joblib.load
+    model = joblib.load(model_path)
     st.success("Model loaded successfully!")
 except FileNotFoundError:
     st.error(f"Model file not found: {model_path}")
@@ -179,108 +178,56 @@ elif step == "Diagnosis & Treatment":
             st.markdown("### Diagnosis: Low Risk of Disease ✅")
             st.success(f"Low Risk Probability: {prediction_proba[0][0]:.2f}")
 
-    # Generate PDF Report
-    def generate_pdf_report(patient_details, prediction, prediction_proba):
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-    
-        # Title
-        pdf.set_font("Arial", style="BU", size=16)  # Set font to bold and underline
-        pdf.cell(200, 10, txt="Healthcare Analysis Report", ln=True, align="C")
-        pdf.set_font("Arial", size=12)  # Reset font to normal
-        pdf.ln(10)
-    
-        # Patient Information
-        pdf.cell(200, 10, txt="Patient Information:", ln=True)
-        pdf.cell(200, 10, txt=f"Full Name: {patient_details.get('full_name', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Age: {patient_details.get('age', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Gender: {patient_details.get('gender', 'N/A')}", ln=True)
-        pdf.ln(10)
-    
-        # Health Metrics
-        pdf.cell(200, 10, txt="Health Metrics:", ln=True)
-        pdf.cell(200, 10, txt=f"Blood Pressure: {patient_details.get('blood_pressure', 'N/A')} mmHg", ln=True)
-        pdf.cell(200, 10, txt=f"Cholesterol: {patient_details.get('cholesterol', 'N/A')} mg/dL", ln=True)
-        pdf.cell(200, 10, txt=f"BMI: {patient_details.get('bmi', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Glucose Level: {patient_details.get('glucose', 'N/A')} mg/dL", ln=True)
-        pdf.ln(10)
-    
-        # Diagnosis Results
-        pdf.cell(200, 10, txt="Diagnosis Results:", ln=True)
-        pdf.cell(200, 10, txt=f"Diagnosis: {'High Risk of Disease' if prediction[0] == 1 else 'Low Risk of Disease'}", ln=True)
-        pdf.cell(200, 10, txt=f"Low Risk Probability: {prediction_proba[0][0]:.2f}", ln=True)
-        pdf.cell(200, 10, txt=f"High Risk Probability: {prediction_proba[0][1]:.2f}", ln=True)
-    
-        # Save PDF to buffer
-        buffer = BytesIO()
-        pdf_output = pdf.output(dest="S").encode("latin1")  # Encode the PDF content
-        buffer.write(pdf_output)
-        buffer.seek(0)
-        return buffer
-    
-        # In the Diagnosis & Treatment section
-        if step == "Diagnosis & Treatment":
-            st.markdown("### Step 3: Diagnosis & Treatment")
-            st.session_state["patient_details"]["symptoms"] = st.text_area("Symptoms", st.session_state["patient_details"]["symptoms"])
-    
-        # Prepare input data for prediction
-        input_data = pd.DataFrame({
-            "age": [st.session_state["patient_details"]["age"]],
-            "gender": [1 if st.session_state["patient_details"]["gender"] == "Female" else 0],
-            "blood_pressure": [st.session_state["patient_details"]["blood_pressure"]],
-            "cholesterol": [st.session_state["patient_details"]["cholesterol"]],
-            "bmi": [st.session_state["patient_details"]["bmi"]],
-            "glucose": [st.session_state["patient_details"]["glucose"]],
-            "smoking_status": [1 if st.session_state["patient_details"]["smoking_status"] == "Smoker" else 0],
-            "alcohol_consumption_light": [1 if st.session_state["patient_details"]["alcohol_consumption"] == "Light" else 0],
-            "alcohol_consumption_moderate": [1 if st.session_state["patient_details"]["alcohol_consumption"] == "Moderate" else 0],
-            "alcohol_consumption_heavy": [1 if st.session_state["patient_details"]["alcohol_consumption"] == "Heavy" else 0],
-            "physical_activity_light": [1 if st.session_state["patient_details"]["physical_activity"] == "Light" else 0],
-            "physical_activity_moderate": [1 if st.session_state["patient_details"]["physical_activity"] == "Moderate" else 0],
-            "physical_activity_heavy": [1 if st.session_state["patient_details"]["physical_activity"] == "Heavy" else 0],
-            "family_history": [1 if st.session_state["patient_details"]["family_history"] == "Yes" else 0],
-        })
-    
-        if not isinstance(input_data, pd.DataFrame):
-            input_data = pd.DataFrame(input_data)
-    
-        # Check if the model has the feature_names_in_ attribute
-        if hasattr(model, 'feature_names_in_'):
-            feature_names = model.feature_names_in_
-        else:
-            # If feature_names_in_ is not available, manually specify the feature names
-            # Replace this list with the actual feature names used during model training
-            feature_names = ['age', 'height', 'weight', 'bmi', 'blood_pressure']  # Example feature names
-    
-        # Reindex the input data to match the model's expected features
-        # Fill missing columns with 0 (or another default value)
-        input_data = input_data.reindex(columns=feature_names, fill_value=0)
-    
-        # Prediction
-        try:
-            prediction = model.predict(input_data)
-            prediction_proba = model.predict_proba(input_data)
-    
-            if prediction[0] == 1:
-                st.markdown("### Diagnosis: High Risk of Disease ❌")
-                st.error(f"Risk Probability: {prediction_proba[0][1]:.2f}")
-            else:
-                st.markdown("### Diagnosis: Low Risk of Disease ✅")
-                st.success(f"Low Risk Probability: {prediction_proba[0][0]:.2f}")
-    
-            # Generate PDF Report
-            pdf_buffer = generate_pdf_report(st.session_state["patient_details"], prediction, prediction_proba)
-    
-            # Download PDF Button
-            st.download_button(
-                label="Download Report as PDF",
-                data=pdf_buffer,
-                file_name="healthcare_analysis_report.pdf",
-                mime="application/pdf"
-            )
-        except Exception as e:
-            st.error(f"Prediction failed: {e}")
+        # Generate PDF Report
+        def generate_pdf_report(patient_details, prediction, prediction_proba):
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=12)
+
+            # Title
+            pdf.set_font("Arial", style="BU", size=16)  # Set font to bold and underline
+            pdf.cell(200, 10, txt="Healthcare Analysis Report", ln=True, align="C")
+            pdf.set_font("Arial", size=12)  # Reset font to normal
+            pdf.ln(10)
+
+            # Patient Information
+            pdf.cell(200, 10, txt="Patient Information:", ln=True)
+            pdf.cell(200, 10, txt=f"Full Name: {patient_details.get('full_name', 'N/A')}", ln=True)
+            pdf.cell(200, 10, txt=f"Age: {patient_details.get('age', 'N/A')}", ln=True)
+            pdf.cell(200, 10, txt=f"Gender: {patient_details.get('gender', 'N/A')}", ln=True)
+            pdf.ln(10)
+
+            # Health Metrics
+            pdf.cell(200, 10, txt="Health Metrics:", ln=True)
+            pdf.cell(200, 10, txt=f"Blood Pressure: {patient_details.get('blood_pressure', 'N/A')} mmHg", ln=True)
+            pdf.cell(200, 10, txt=f"Cholesterol: {patient_details.get('cholesterol', 'N/A')} mg/dL", ln=True)
+            pdf.cell(200, 10, txt=f"BMI: {patient_details.get('bmi', 'N/A')}", ln=True)
+            pdf.cell(200, 10, txt=f"Glucose Level: {patient_details.get('glucose', 'N/A')} mg/dL", ln=True)
+            pdf.ln(10)
+
+            # Diagnosis Results
+            pdf.cell(200, 10, txt="Diagnosis Results:", ln=True)
+            pdf.cell(200, 10, txt=f"Diagnosis: {'High Risk of Disease' if prediction[0] == 1 else 'Low Risk of Disease'}", ln=True)
+            pdf.cell(200, 10, txt=f"Low Risk Probability: {prediction_proba[0][0]:.2f}", ln=True)
+            pdf.cell(200, 10, txt=f"High Risk Probability: {prediction_proba[0][1]:.2f}", ln=True)
+
+            # Save PDF to buffer
+            buffer = BytesIO()
+            pdf_output = pdf.output(dest="S").encode("latin1")  # Encode the PDF content
+            buffer.write(pdf_output)
+            buffer.seek(0)
+            return buffer
+
+        # Generate PDF and provide download button
+        pdf_buffer = generate_pdf_report(st.session_state["patient_details"], prediction, prediction_proba)
+        st.download_button(
+            label="Download Report as PDF",
+            data=pdf_buffer,
+            file_name="healthcare_analysis_report.pdf",
+            mime="application/pdf"
+        )
+    except Exception as e:
+        st.error(f"Prediction failed: {e}")
 
 # Step 4: Final Report
 elif step == "Final Report":
@@ -390,32 +337,5 @@ if st.sidebar.button("🚀 Send"):
         # Clear input field by resetting session state
         st.session_state["user_input"] = ""  
 
-
 # Initialize session state keys if they don't exist
-if "bmi_active" not in st.session_state:
-    st.session_state["bmi_active"] = False  # Default value
-
-# --- Display BMI Calculator if Triggered ---
-if st.session_state["bmi_active"]:
-    st.sidebar.markdown("### 🏋️ BMI Calculator")
-    weight = st.sidebar.number_input("Weight (kg)", min_value=1.0, value=70.0, step=0.1)
-    height = st.sidebar.number_input("Height (cm)", min_value=50.0, value=170.0, step=0.1)
-    
-    if st.sidebar.button("📊 Calculate BMI"):
-        height_m = height / 100  # Convert height to meters
-        bmi = round(weight / (height_m ** 2), 2)
-        st.sidebar.success(f"📌 Your BMI: {bmi}")
-        
-        # BMI Interpretation
-        if bmi < 18.5:
-            st.sidebar.warning("Underweight: Consider consulting a nutritionist.")
-        elif 18.5 <= bmi < 24.9:
-            st.sidebar.success("Normal weight: Keep up the good work!")
-        elif 25 <= bmi < 29.9:
-            st.sidebar.warning("Overweight: Consider a balanced diet and exercise.")
-        else:
-            st.sidebar.error("Obese: Please consult a healthcare professional.")
-        
-        st.session_state["bmi_active"] = False  # Reset BMI trigger        
-        # Refresh UI to show cleared input field
-        st.rerun()
+if "bmi_active" not in st.session
