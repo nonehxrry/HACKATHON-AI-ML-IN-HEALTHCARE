@@ -135,7 +135,7 @@ elif step == "Lifestyle Habits":
     st.session_state["patient_details"]["diet"] = st.selectbox("Diet", diet_options, index=diet_options.index(current_diet))
     
     st.session_state["patient_details"]["sleep_hours"] = st.number_input("Sleep Hours", min_value=0, max_value=24, value=st.session_state["patient_details"].get("sleep_hours", 7))
-    st.session_state["patient_details"]["stress_level"] = st.selectbox("Stress Level", ["Low", "Moderate", "High"], index=["Low", "Moderate", "High"].index(st.session_state["patient_details"]["stress_level"]))
+    st.session_state["patient_details"]["stress_level"] = st.selectbox("Stress Level", stress_options, index=stress_options.index(st.session_state["patient_details"]["stress_level"]))
     st.session_state["patient_details"]["waist_circumference"] = st.number_input("Waist Circumference (cm)", min_value=0, value=st.session_state["patient_details"].get("waist_circumference", 80))
     st.session_state["patient_details"]["hip_circumference"] = st.number_input("Hip Circumference (cm)", min_value=0, value=st.session_state["patient_details"].get("hip_circumference", 90))
 
